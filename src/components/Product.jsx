@@ -1,3 +1,5 @@
+import TimerInSeconds from "./TimerInSeconds";
+
 function Product(props) {
   return (
     <div style={{ border: "2px solid black" }}>
@@ -6,7 +8,15 @@ function Product(props) {
       {props.showPreparationTime && (
         <p>{props.data.preparation_time} seconds</p>
       )}
-      {props.showTimeLeft && <p>{props.data.timeLeft} seconds left</p>}
+      {props.showTimeLeft && (
+        <p>
+          <TimerInSeconds
+            initialTime={props.data.preparation_time}
+            onReachZero={props.onReachZero}
+          />{" "}
+          seconds left
+        </p>
+      )}
     </div>
   );
 }

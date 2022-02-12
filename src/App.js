@@ -14,10 +14,6 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const [timeNow, setTimeNow] = useState(
-    Math.floor(new Date().getTime() / 1000)
-  );
-
   // Get list of products
   useEffect(() => {
     axios
@@ -33,28 +29,6 @@ function App() {
         setIsLoading(false);
       });
   }, []);
-
-  useEffect(() => {
-    setInterval(() => {
-      setTimeNow(Math.floor(new Date().getTime() / 1000));
-    }, 1000);
-  }, []);
-
-  useEffect(() => {
-    setDispatched((prevState) => [
-      ...prevState,
-      ...toBeDispatched.filter((product) => product.timeLeft === 0),
-    ]);
-
-    setToBeDispatched((prevState) =>
-      prevState
-        .filter((product) => product.timeLeft > 0)
-        .map((product) => ({
-          ...product,
-          timeLeft: product.preparation_time - (timeNow - product.orderedAt),
-        }))
-    );
-  }, [timeNow]);
 
   return (
     <div>
@@ -74,8 +48,7 @@ function App() {
                     ...prevState,
                     {
                       ...selected,
-                      orderedAt: Math.floor(new Date().getTime() / 1000),
-                      timeLeft: selected.preparation_time,
+                      id: selected.id + prevState.length,
                     },
                   ]);
                   setSelected(null);
@@ -88,6 +61,7 @@ function App() {
           <h1>Available </h1>
           {available.map((product) => (
             <button
+              key={product.id}
               onClick={() => {
                 setSelected({ ...product });
               }}
@@ -99,11 +73,21 @@ function App() {
           ))}
           <h1>To be dispatched</h1>
           {toBeDispatched.map((product) => (
-            <Product data={product} showTimeLeft />
+            <Product
+              key={product.id}
+              data={product}
+              showTimeLeft
+              onReachZero={() => {
+                setToBeDispatched((prevState) =>
+                  prevState.filter((iProduct) => iProduct.id !== product.id)
+                );
+                setDispatched((prevState) => [...prevState, { ...product }]);
+              }}
+            />
           ))}
           <h1>Dispatched</h1>
           {dispatched.map((product) => (
-            <Product data={product} />
+            <Product key={product.id} data={product} />
           ))}
         </div>
       )}
