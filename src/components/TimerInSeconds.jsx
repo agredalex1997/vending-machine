@@ -19,7 +19,19 @@ function TimerInSeconds(props) {
     }
   }, [timeLeft]);
 
-  return <span>{timeLeft}</span>;
+  return (
+    <div>
+      <span>{timeLeft} seconds left</span>
+      <div
+        style={{
+          maxWidth: (timeLeft / props.initialTime) * 100 + "%",
+          height: "8px",
+          backgroundColor: "black",
+          marginTop: "4px",
+        }}
+      />
+    </div>
+  );
 }
 
 export default TimerInSeconds;
